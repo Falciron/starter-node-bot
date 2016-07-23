@@ -36,8 +36,9 @@ function evaluateCard(card,searchTerm){
   else return false;
 }
 
-controller.hears('/\[(.*?)\]/g', ['message_received'], function(bot, message) {
+controller.hears('\[(.*?)\]', ['message_received'], function(bot, message) {
 	console.log('Beep');
+	console.log(message);
 	// Zero index is the entire message, so start at one.
 	for (var index = 0; index < message.match.length; index++){
 		console.log('Beep Boop');
