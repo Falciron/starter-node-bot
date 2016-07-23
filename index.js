@@ -36,44 +36,44 @@ function evaluateCard(card,searchTerm){
   else return false;
 }
 
-controller.hears('\[(.*?)\]', ['message_received'], function(bot, message) {
+controller.hears('/\[(.*?)\]/g', ['message_received'], function(bot, message) {
 	console.log('Beep');
 	// Zero index is the entire message, so start at one.
 	for (var index = 0; index < message.match.length; index++){
 		console.log('Beep Boop');
-		getCardImage(message.match[index], bot, message);
+		bot.reply(message,getCardImage(message.match[index]));
 	}
 });
 
-function getCardImage(searchTerm, bot, message) {
+function getCardImage(searchTerm) {
 	request('https://api.magicthegathering.io/v1/cards?' + querystring.stringify({name: searchTerm}), function (err, res, body) {
 		if (!err && res.statusCode === 200){
 			var cards = JSON.parse(body);
 			if (cards.cards.length === 0){
-				bot.reply(message, 'The card "' + searchTerm + '" could not be found.');
+				return 'The card "' + searchTerm + '" could not be found.';
 			} else {
 				var exactMatchFound = false;
 				var firstImageFound = false;
 				var firstImageIndex = 0;
-				var bestMatchIndex = 0;
 				var cardCounter = 0;
-				while (!exactMatchFound && cardCounter < cards.cards.length){
+				while (cardCounter < cards.cards.length){
 					var evalResult = evaluateCard(cards.cards[cardCounter],searchTerm);
 					if (evalResult === 'ExactMatch'){
-						bestMatchIndex = cardCounter;
-						exactMatchFound = true;
+						return cards.cards[cardCounter].imageUrl;
 					} else if (evalResult === 'Candidate'){
 						firstImageIndex = cardCounter;
 						firstImageFound = true;
 					}
 					cardCounter++;
 				}
-				if (exactMatchFound){
-					bot.reply(message, cards.cards[bestMatchIndex].imageUrl);
-				} else if (firstImageFound){
-					bot.reply(message, cards.cards[firstImageIndex].imageUrl);
+				if (firstImageFound){
+					return cards.cards[firstImageIndex].imageUrl;
+				} else {
+					return 'No card image could be found.';
 				}
 			}
+		} else {
+			return 'Something went wrong. Please try again later.';
 		}
 	});
 }
