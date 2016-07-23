@@ -36,7 +36,7 @@ function evaluateCard(card,searchTerm){
   else return false;
 }
 
-controller.hears('\[(.*?)\]', function(bot, message) {
+controller.hears('\[(.*?)\]', ['message_received'], function(bot, message) {
 	// Zero index is the entire message, so start at one.
 	for (var index = 1; index < message.match.length; index++){
 		getCardImage(message.match[index], bot, message);
