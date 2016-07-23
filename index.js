@@ -43,11 +43,11 @@ function evaluateCard(card,searchTerm){
 
 controller.on('message_received', function(bot, message) {
   var bracketRegex = /\[(.*?)\]/g;
-  if (result !== null) {
-    var searchTermList = result.map(function (result) {
-      var tempResult = result;
-      tempResult = tempResult.replace(/\[|\]/g, '');
-      return tempResult;
+  if (message !== null) {
+    var searchTermList = message.map(function (message) {
+      var tempMessage = message;
+      tempMessage = tempMessage.replace(/\[|\]/g, '');
+      return tempMessage;
     });
     for (index = 0; index < searchTermList.length; index++){
       getCardImage(searchTermList[index],message);
