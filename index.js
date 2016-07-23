@@ -37,8 +37,10 @@ function evaluateCard(card,searchTerm){
 }
 
 controller.hears('\[(.*?)\]', ['message_received'], function(bot, message) {
+	console.log('Beep');
 	// Zero index is the entire message, so start at one.
-	for (var index = 1; index < message.match.length; index++){
+	for (var index = 0; index < message.match.length; index++){
+		console.log('Beep Boop');
 		getCardImage(message.match[index], bot, message);
 	}
 });
