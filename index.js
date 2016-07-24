@@ -36,22 +36,19 @@ function evaluateCard(card,searchTerm){
   else return false;
 }
 
-controller.hears('\[(.*?)\]', ['message_received'], function(bot, message) {
-	console.log('Beep');
-	console.log(message);
-	// Zero index is the entire message, so start at one.
+controller.hears([/\[(.*?)\]/g], ['direct_mention','direct_message','mention','ambient'], function(bot, message) {
 	for (var index = 0; index < message.match.length; index++){
-		console.log('Beep Boop');
-		bot.reply(message,getCardImage(message.match[index]));
+		var searchTerm = message.match[index].replace(/[[\]]/g,'');
+		getCardImage(searchTerm,bot,message);
 	}
 });
 
-function getCardImage(searchTerm) {
+function getCardImage(searchTerm,bot,message) {
 	request('https://api.magicthegathering.io/v1/cards?' + querystring.stringify({name: searchTerm}), function (err, res, body) {
 		if (!err && res.statusCode === 200){
 			var cards = JSON.parse(body);
 			if (cards.cards.length === 0){
-				return 'The card "' + searchTerm + '" could not be found.';
+				bot.reply(message,'The card "' + searchTerm + '" could not be found.');
 			} else {
 				var exactMatchFound = false;
 				var firstImageFound = false;
@@ -60,7 +57,8 @@ function getCardImage(searchTerm) {
 				while (cardCounter < cards.cards.length){
 					var evalResult = evaluateCard(cards.cards[cardCounter],searchTerm);
 					if (evalResult === 'ExactMatch'){
-						return cards.cards[cardCounter].imageUrl;
+						bot.reply(message,cards.cards[cardCounter].imageUrl);
+						return;
 					} else if (evalResult === 'Candidate'){
 						firstImageIndex = cardCounter;
 						firstImageFound = true;
@@ -68,13 +66,16 @@ function getCardImage(searchTerm) {
 					cardCounter++;
 				}
 				if (firstImageFound){
-					return cards.cards[firstImageIndex].imageUrl;
+					bot.reply(message,cards.cards[firstImageIndex].imageUrl);
+					return;
 				} else {
-					return 'No card image could be found.';
+					bot.reply(message,'No card image could be found.');
+					return;
 				}
 			}
 		} else {
-			return 'Something went wrong. Please try again later.';
+			bot.reply(message,'Something went wrong. Please try again later.');
+			return;
 		}
 	});
 }
