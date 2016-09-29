@@ -24,8 +24,6 @@
   "dependencies": {
     "beepboop-botkit": "^1.4.1",
     "botkit": "~0.2.2",
-    "q" : "*",
-    "querystring" : "*",
-    "request" : "*"
+    "mtgsdk": "0.1.1"
   }
 }
