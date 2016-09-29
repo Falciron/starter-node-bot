@@ -32,7 +32,7 @@ function evaluateCard(card,searchTerm){
 controller.hears([/\[(.*?)\]/g], ['direct_mention','direct_message','mention','ambient'], function(bot, message) {
 	for (var index = 0; index < message.match.length; index++){
 		var searchTerm = message.match[index].replace(/[[\]]/g,'');
-		var notSoSmartTerm = searchTerm.replace(/’/g, "'");
+		var notSoSmartTerm = searchTerm.replace(/\u2019/g, "'");
 		getCardImage(notSoSmartTerm,bot,message);
 	}
 });
